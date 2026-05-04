@@ -15,6 +15,7 @@ clean, correctly-typed features for URLs Firefox would actually block.
 """
 
 from __future__ import annotations
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -167,6 +168,15 @@ def extract_tracker_requests(har_path: Path, types_path: Path,
 
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--har-dir", default=str(HAR_DIR),
+                    help="Directory of HAR files (default: data/raw/firefox_crawl).")
+    ap.add_argument("--out", default=str(OUT_CSV),
+                    help="Output CSV path (default: data/raw/claim_b_in_page_validation.csv).")
+    args = ap.parse_args()
+    har_dir = Path(args.har_dir)
+    out_csv = Path(args.out)
+
     sys.path.insert(0, str(ROOT / "src" / "model"))
     from inference_pipeline import InferencePipeline
 
@@ -179,18 +189,38 @@ def main():
     print(f"  feature_cols: {len(pipe.feature_cols)}")
     print(f"  domains in encoding: {len(pipe.encodings['domain_median']):,}")
 
-    print(f"\nScanning HARs in {HAR_DIR}...")
-    har_files = sorted(HAR_DIR.glob("har_*.json"))
+    print(f"\nScanning HARs in {har_dir}...")
+    har_files = sorted(har_dir.glob("har_*.json"))
     print(f"  {len(har_files)} HAR files")
 
     all_reqs = []
     for hp in har_files:
         slug = hp.stem.replace("har_", "")
-        types_path = HAR_DIR / f"types_{slug}.json"
-        page_url = "(unknown)"
+        types_path = har_dir / f"types_{slug}.json"
+        # Recover page host from the HAR slug: slug = "NNNN_<host>"
+        # so the part after the first "_" is the URL-derived host (with
+        # path separators replaced by "_"). Take everything up to the
+        # next "_" as the host (works for all simple-root targets).
+        slug_parts = slug.split("_", 1)
+        page_host = slug_parts[1] if len(slug_parts) > 1 else ""
+        # Strip trailing path remnants (host_path → host)
+        page_host = page_host.split("_")[0]
+        page_url = f"https://{page_host}/"
         reqs = extract_tracker_requests(hp, types_path, tracker_set, page_url)
+        # Drop first-party requests: tracker request whose host shares
+        # the page host's eTLD+1 is not actually a third-party tracker.
+        def _share_etld1(a: str, b: str) -> bool:
+            ap = a.split(".")
+            bp = b.split(".")
+            if len(ap) < 2 or len(bp) < 2:
+                return a == b
+            return ".".join(ap[-2:]) == ".".join(bp[-2:])
+        before = len(reqs)
+        reqs = [r for r in reqs if not _share_etld1(r["host"], page_host)]
+        dropped = before - len(reqs)
         all_reqs.extend(reqs)
-        print(f"  {hp.name}: {len(reqs)} trained-category tracker requests")
+        print(f"  {hp.name}: {len(reqs)} third-party tracker requests "
+              f"(dropped {dropped} first-party)")
 
     if not all_reqs:
         print("\nNo tracker requests found.")
@@ -217,7 +247,9 @@ def main():
     df = df[df["model_pred"].notna()].copy()
     df["abs_err"] = (df["model_pred"] - df["transfer_bytes"]).abs()
 
-    df.to_csv(OUT_CSV, index=False)
+    out_csv.parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(out_csv, index=False)
+    print(f"  Wrote {out_csv}")
 
     mae = df["abs_err"].mean()
     medae = df["abs_err"].median()

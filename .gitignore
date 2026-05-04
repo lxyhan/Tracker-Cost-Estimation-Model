@@ -17,6 +17,8 @@ catboost_info/
 # Python
 __pycache__/
 *.pyc
+.venv/
+venv/
 
 # Large data files (regenerable from sql/ queries via BigQuery)
 data/raw/per_request_full.csv
@@ -36,6 +38,7 @@ data/raw/15_per_category_full_population/
 data/raw/16_sample_stability/
 data/raw/17_recent_apr2026/
 data/raw/firefox_crawl/
+data/raw/firefox_crawl_500/
 
 # Anonymous-double-blind submission build artifacts (compiled PDF stays local)
 anrw-submission/paper.pdf

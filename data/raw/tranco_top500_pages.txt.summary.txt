@@ -1,0 +1,430 @@
+Tranco source:       data/raw/tranco_9W772_top1000.csv
+Target reachable:    500
+Domains checked:     923
+Reachable URLs:      500
+Failed/skipped:      423
+
+--- Failures (domain, reason) ---
+gtld-servers.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+gstatic.com	http_404
+googleapis.com	http_404
+akamai.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+twitter.com	http_403
+googletagmanager.com	http_404
+googlevideo.com	URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate 
+live.com	http_417
+akamaiedge.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+akadns.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+amazon.com	202
+googleusercontent.com	http_404
+domaincontrol.com	URLError: <urlopen error [Errno 61] Connection refused>
+keenetic.io	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+ezviz7.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+microsoftonline.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+appsflyersdk.com	http_403
+office.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+apple-dns.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+chatgpt.com	http_403
+trafficmanager.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+aaplimg.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+pinterest.com	http_308
+cloudfront.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+goo.gl	http_400
+ripn.net	URLError: <urlopen error timed out>
+x.com	http_403
+hicloudcam.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+windowsupdate.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+gvt1.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+adobe.com	timeout: The read operation timed out
+windows.net	URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate 
+tiktokcdn.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+cloudflare.net	http_403
+gvt2.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+roblox.com	http_308
+ytimg.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+tiktokv.com	http_404
+akam.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+pv-cdn.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+edgekey.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+nic.ru	http_423
+office365.com	http_403
+edgesuite.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+root-servers.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+okcdn.ru	http_403
+cdninstagram.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+googleadservices.com	http_404
+a2z.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+vk.com	http_418
+trbcdn.net	URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate 
+vedcdnlb.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+amazon-adsystem.com	http_404
+cdn77.org	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+app-measurement.com	http_404
+outlook.com	http_417
+msftncsi.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+amazon.dev	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+registrar-servers.com	URLError: <urlopen error [Errno 61] Connection refused>
+spo-msedge.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+app-analytics-services.com	http_404
+epicgames.com	http_403
+forms.gle	http_400
+bytefcdn-oversea.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+yccdn.ru	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+steamserver.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+msftconnecttest.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+godaddy.com	http_403
+ax-msedge.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+azurefd.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+miit.gov.cn	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+vkuserphoto.ru	http_418
+3gppnetwork.org	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+ggpht.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+aliyuncs.com	http_404
+wac-msedge.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+webex.com	http_403
+nflxso.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+dnsowl.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+cdn-apple.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+azurewebsites.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+macromedia.com	URLError: <urlopen error timed out>
+iiko.it	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+medium.com	http_403
+nominetdns.uk	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+tiktokcdn-us.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+aws.dev	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+prodregistryv2.org	http_404
+msedge.net	URLError: <urlopen error timed out>
+ttdns2.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+oracle.com	http_403
+ipv4only.arpa	URLError: <urlopen error timed out>
+shifen.com	URLError: <urlopen error timed out>
+sfx.ms	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+spov-msedge.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+adnxs.com	http_404
+static.microsoft	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+ozon.ru	http_307
+dns-parking.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+azureedge.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+fastly-edge.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+pubmatic.com	URLError: <urlopen error [SSL: TLSV1_ALERT_PROTOCOL_VERSION] tlsv1 ale
+jomodns.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+researchgate.net	http_403
+akamaized.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+comcast.net	URLError: <urlopen error [Errno 61] Connection refused>
+youtube-nocookie.com	URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate 
+canva.com	http_403
+vecdnlb.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+hichina.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+playstation.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+imdb.com	202
+shopifysvc.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+wsdvs.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+cdngslb.com	URLError: <urlopen error timed out>
+ksyuncdn.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+wixsite.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+omtrdc.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+alibabadns.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+openai.com	http_403
+wildberries.ru	http_498
+booking.com	202
+autodesk.com	timeout: The read operation timed out
+mangosip.ru	URLError: <urlopen error timed out>
+ttvnw.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+facebook.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+virginm.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+dropcatch.com	http_308
+openx.net	http_404
+jsdelivr.net	URLError: <urlopen error timed out>
+heytapmobile.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+etsy.com	http_403
+reuters.com	http_401
+shalltry.com	http_403
+akamaitech.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+trueconf.net	URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate 
+samsungqbe.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+mtgglobals.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+tm-azurefd.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+media-amazon.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+name-services.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+amazon.co.uk	202
+byteoversea.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+nr-data.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+rocket-cdn.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+akamaihd.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+clarity.ms	URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate 
+myshopify.com	http_404
+wbx2.com	URLError: <urlopen error timed out>
+vkuser.net	URLError: <urlopen error timed out>
+douyincdn.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+telecid.ru	URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate 
+inner-active.mobi	URLError: <urlopen error timed out>
+vk.ru	http_418
+demdex.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+libp2p.direct	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+capcutapi.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+allawnos.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+cnbc.com	timeout: The read operation timed out
+tbcache.com	URLError: <urlopen error timed out>
+washingtonpost.com	timeout: The read operation timed out
+wsj.com	http_401
+kaspersky-labs.com	URLError: <urlopen error [Errno 61] Connection refused>
+trustpilot.com	http_403
+namebrightdns.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+cdnbuild.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+ezvizlife.com	http_503
+samsungcloudsolution.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+geobasket.ru	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+bloomberg.com	http_403
+edgecdn.ru	URLError: <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert
+kwai-pro.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+rzone.de	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+sc-cdn.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+tiktokv.us	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+avsxappcaptiveportal.com	URLError: <urlopen error timed out>
+heytapdl.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+t-msedge.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+unsplash.com	http_401
+tiktokcdn-eu.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+live-video.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+indeed.com	http_403
+ibyteimg.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+cookiedatabase.org	http_403
+xcal.tv	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+kwaipros.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+tiktokv.eu	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+lsrelayaccess.com	URLError: <urlopen error timed out>
+adobe.net	URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate 
+sc-gw.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+online-metrix.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+ngenix.net	http_503
+pixabay.com	http_403
+mynetname.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+xboxlive.com	URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate 
+intel.com	http_403
+pangle.io	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+aliyuncsslbintl.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+awsglobalaccelerator.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+avcdn.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+imcmdb.net	URLError: <urlopen error timed out>
+mcafee.com	http_403
+netease.com	URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate 
+discord.media	http_520
+t-mobile.com	http_403
+list-manage.com	URLError: <urlopen error timed out>
+dual-s-msedge.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+beian.gov.cn	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+worldnic.com	URLError: <urlopen error timed out>
+hostgator.com	http_403
+quora.com	http_308
+gosuslugi.ru	URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate 
+gamepass.com	URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate 
+vkontakte.ru	http_418
+nflximg.com	URLError: <urlopen error timed out>
+elasticbeanstalk.com	URLError: <urlopen error _ssl.c:1112: The handshake operation timed ou
+arubanetworks.com	URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate 
+scdn.co	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+eye4.cn	URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate 
+kwai.net	URLError: <urlopen error timed out>
+firetvcaptiveportal.com	URLError: <urlopen error timed out>
+mysql.com	http_403
+nflxvideo.net	URLError: <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert
+2mdn.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+myqcloud.com	URLError: <urlopen error [Errno 65] No route to host>
+awswaf.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+nease.net	URLError: <urlopen error [Errno 61] Connection refused>
+tencent-cloud.net	URLError: <urlopen error [Errno 65] No route to host>
+amazontrust.com	http_308
+amzn.to	202
+easebar.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+fb-t-msedge.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+bamgrid.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+exp-tas.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+myhuaweicloud.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+enacdn.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+telegraph.co.uk	http_403
+gandi-ns.fr	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+nstld.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+amazon.co.jp	202
+gcdn.co	URLError: <urlopen error [SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert
+adobedtm.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+svc.ms	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+run.app	http_404
+rbxcdn.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+browser-intake-datadoghq.com	http_404
+fandom.com	http_403
+ft.com	http_403
+vedsalb.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+360.cn	http_403
+expireddomains.com	http_403
+markmonitor.com	http_403
+visualstudio.com	http_308
+byteglb.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+rlcdn.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+live.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+azure-dns.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+comcast.com	URLError: <urlopen error [Errno 61] Connection refused>
+tandfonline.com	http_403
+spaceweb.pro	URLError: <urlopen error [Errno 61] Connection refused>
+dnspod.net	URLError: <urlopen error timed out>
+oraclecloud.com	http_403
+my.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+impervadns.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+msidentity.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+tripadvisor.com	http_403
+supertms.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+force.com	http_404
+cdn20.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+yahoodns.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+adobedc.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+rakuten.co.jp	timeout: The read operation timed out
+avito.ru	http_403
+bidswitch.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+vidaahub.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+qlivecdn.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+hicloud.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+gwfb.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+xiaomi.net	URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate 
+alicdn.com	URLError: <urlopen error timed out>
+samsungapps.com	URLError: <urlopen error timed out>
+a-msedge.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+googlezip.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+ieee.org	http_418
+googletagservices.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+amagi.tv	URLError: <urlopen error _ssl.c:1112: The handshake operation timed ou
+mdpi.com	http_403
+licdn.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+b-msedge.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+ozone.ru	URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate 
+ups.com	timeout: The read operation timed out
+typekit.net	URLError: <urlopen error timed out>
+bluehost.com	http_403
+afilias-nst.info	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+featureassets.org	http_403
+bytedns1.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+crwdcntrl.net	URLError: <urlopen error timed out>
+nic.network	URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate 
+amazon.ca	202
+quantserve.com	http_503
+1rx.io	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+safebrowsing.apple	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+agkn.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+cambridge.org	http_403
+bx-msedge.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+twimg.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+noaa.gov	http_403
+pinimg.com	http_308
+telephony.goog	timeout: The read operation timed out
+bunnyinfra.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+ui-dns.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+nmrodam.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+smaato.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+anydesk.com	http_403
+yelp.com	http_403
+mega.co.nz	timeout: The read operation timed out
+ln-msedge.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+e2ro.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+volcfcdndvs.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+samsungacr.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+afilias-nst.org	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+nic.direct	URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate 
+creativecdn.com	204
+bidr.io	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+360safe.com	URLError: <urlopen error timed out>
+sophos.com	timeout: The read operation timed out
+hath.network	URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate 
+criteo.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+amazon.in	202
+asus.com	http_404
+mhverifier.ru	URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate 
+freepik.com	http_403
+uber.com	http_406
+cursor.sh	http_308
+ks-cdn.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+ovscdns.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+wb.ru	http_498
+dbankcloud.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+chinamobile.com	URLError: <urlopen error timed out>
+grammarly.io	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+everesttech.net	URLError: <urlopen error timed out>
+ci-servers.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+rackspace.net	URLError: <urlopen error timed out>
+steamstatic.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+imrworldwide.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+adform.net	http_403
+amazon.es	202
+liadm.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+homedepot.com	http_403
+marriott.com	http_403
+omnitagjs.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+ci-servers.org	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+bdydns.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+wswebcdn.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+resolver.arpa	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+cmediahub.ru	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+allegro.pl	timeout: The read operation timed out
+githubusercontent.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+kick.com	http_403
+amazon.it	202
+bestbuy.com	timeout: The read operation timed out
+turn.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+lgtvcommon.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+mckinsey.com	timeout: The read operation timed out
+usgovcloudapi.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+herokudns.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+fda.gov	http_404
+nel.goog	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+squarespacedns.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+claude.ai	http_403
+33across.com	http_403
+myspace.com	http_503
+people.com	http_403
+ddnss.de	http_403
+kontur.ru	http_403
+dbankcloud.ru	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+adjust.com	http_429
+mixpanel.com	http_308
+yandexcloud.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+recaptcha.net	http_404
+bytefcdn-ttpeu.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+alipaydns.com	URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate 
+yellowblue.io	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+mayoclinic.org	http_403
+bytefcdn-ttpus.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+erome.com	timeout: The read operation timed out
+investopedia.com	http_403
+nintendo.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+onlyfans.com	http_403
+spotifycdn.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+goskope.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+ssl-images-amazon.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+discogs.com	http_403
+wbbasket.ru	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+adgrx.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+cdnhwc1.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+pexels.com	http_403
+cdn-vk.ru	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+jetbrains.com	http_308
+miwifi.com	URLError: <urlopen error timed out>
+zenecn.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+life360.com	http_403
+ioref.io	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+eu-1-id5-sync.com	timeout: The read operation timed out
+tplinknbu.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+akahost.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+msftauth.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+usda.gov	timeout: The read operation timed out
+aiv-delivery.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+www.gov.br	http_403
+llamarpc.com	http_308
+cloudsink.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+tiktokw.us	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+zdnscloud.cn	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+amazon.com.br	202
+samsungosp.com	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+go-mpulse.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+herokuapp.com	URLError: <urlopen error [SSL: TLSV1_UNRECOGNIZED_NAME] tlsv1 unrecogn
+azure-devices.net	URLError: <urlopen error [Errno 8] nodename nor servname provided, or 
+linode.com	http_403
+fbsbx.com	http_404
+ddns.net	URLError: <urlopen error timed out>
+usercontent.goog	http_404

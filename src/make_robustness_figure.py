@@ -28,12 +28,14 @@ horizons_label = ["In-dist.", "1\mo", "3\mo", "6\mo"]
 model_agg = [6.0, 8.0, 10.7, 13.9]
 lut_agg   = [21.9, 21.3, 21.5, 19.6]
 
-# --- Panel B: Claim B aggregation (in-page Firefox) ---
+# --- Panel B: Claim B aggregation (Tranco 500-page in-page Firefox) ---
+# Numbers from src/claim_b_aggregation.py output on
+# data/raw/claim_b_500page_apr2026.csv (apr2026 model + apr2026 LUT).
 N = [50, 100, 200, 500]
-model_uniform    = [26.8, 23.9, 23.4, 24.2]
-lut_uniform      = [33.6, 31.4, 31.3, 31.5]
-model_correlated = [42.1, 39.8, 38.2, 38.6]
-lut_correlated   = [50.0, 48.6, 47.5, 47.6]
+model_uniform    = [43.3, 44.5, 46.1, 46.7]
+lut_uniform      = [36.8, 37.6, 39.4, 40.1]
+model_correlated = [59.4, 58.4, 57.9, 57.6]
+lut_correlated   = [72.5, 71.6, 71.1, 69.2]
 
 plt.rcParams["font.size"] = 10
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(7.0, 2.7))
@@ -73,7 +75,7 @@ ax2.set_xticks(x)
 ax2.set_xticklabels([f"N={n}" for n in N])
 ax2.set_xlabel("Browsing scale (tracker reqs / week)")
 ax2.set_title("(b) In-page Firefox deployment", fontsize=10, pad=8)
-ax2.set_ylim(0, 60)
+ax2.set_ylim(0, 80)
 
 # Clean both axes
 for ax in (ax1, ax2):

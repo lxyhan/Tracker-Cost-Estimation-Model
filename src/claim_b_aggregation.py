@@ -12,6 +12,7 @@ the deployable LUT baseline at the user-facing weekly total?
 """
 
 from __future__ import annotations
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -92,8 +93,15 @@ def aggregation_sim(df: pd.DataFrame, N_values=(50, 100, 200, 500),
 
 
 def main():
-    df = pd.read_csv(VAL_CSV)
-    print(f"Loaded {len(df):,} in-page tracker requests from {VAL_CSV}")
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--val-csv", default=str(VAL_CSV),
+                    help="Per-request validation CSV from claim_b_har_analysis.py "
+                         "(default: data/raw/claim_b_in_page_validation.csv).")
+    args = ap.parse_args()
+    val_csv = Path(args.val_csv)
+
+    df = pd.read_csv(val_csv)
+    print(f"Loaded {len(df):,} in-page tracker requests from {val_csv}")
     df = add_lut_predictions(df)
     print(f"Added LUT predictions (D+T fallback chain)")
     print()
