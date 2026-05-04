@@ -18,11 +18,32 @@ catboost_info/
 __pycache__/
 *.pyc
 
-# Large data files
+# Large data files (regenerable from sql/ queries via BigQuery)
 data/raw/per_request_full.csv
 data/raw/per_request_features.csv
 data/raw/per_request_1pct.csv
 data/raw/per_request_1pct_sep2024.csv
+data/raw/05_per_request_full/
+data/raw/07_temporal_sep2024/
+data/raw/08_temporal_jul2024/
+data/raw/09_temporal_dec2024/
+data/raw/10_temporal_jun2025/
+data/raw/11_desktop_jun2024/
+data/raw/12_per_page_bytes/
+data/raw/13_top_tracker_concentration/
+data/raw/14_path_diversity/
+data/raw/15_per_category_full_population/
+data/raw/16_sample_stability/
+data/raw/17_recent_apr2026/
+data/raw/firefox_crawl/
+
+# Anonymous-double-blind submission build artifacts (compiled PDF stays local)
+anrw-submission/paper.pdf
+anrw-submission/*.aux
+anrw-submission/*.bbl
+anrw-submission/*.blg
+anrw-submission/*.log
+anrw-submission/*.out
 
 # Model binaries
 models/per_request/*.json
@@ -58,9 +79,11 @@ models/training_results.json
 models/quantile/
 models/self_trained/
 
-# PDFs (except the paper)
+# PDFs (except the paper and the ANRW figures)
 *.pdf
 !paper.pdf
+!figures/fig_*.pdf
+!anrw-submission/figures/fig_*.pdf
 
 # OS
 .DS_Store

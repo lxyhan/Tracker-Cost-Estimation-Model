@@ -1,0 +1,32 @@
+{
+  "July 2024": {
+    "n_rows": 3418930,
+    "model_mae": 4453.53857421875,
+    "lut_mae": 6694.123908064804,
+    "rho": 0.9346884841334332,
+    "per_request_advantage_pct": 33.47092710887364,
+    "agg_model_median_pct": 7.984120144244709,
+    "agg_lut_median_pct": 21.33297192761492,
+    "agg_advantage_pp": 13.348851783370211
+  },
+  "September 2024": {
+    "n_rows": 3137748,
+    "model_mae": 4775.7890625,
+    "lut_mae": 6720.559445022353,
+    "rho": 0.9379124070870754,
+    "per_request_advantage_pct": 28.937626375178727,
+    "agg_model_median_pct": 10.70906083545233,
+    "agg_lut_median_pct": 21.530995661985152,
+    "agg_advantage_pp": 10.821934826532821
+  },
+  "December 2024": {
+    "n_rows": 3186026,
+    "model_mae": 5256.2470703125,
+    "lut_mae": 7068.828811974541,
+    "rho": 0.9203618508122561,
+    "per_request_advantage_pct": 25.641896131245133,
+    "agg_model_median_pct": 13.860906650288454,
+    "agg_lut_median_pct": 19.57015697352991,
+    "agg_advantage_pp": 5.7092503232414575
+  }
+}

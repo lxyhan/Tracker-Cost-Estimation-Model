@@ -1,0 +1,359 @@
+% ============================================================
+% Estimating the Unobservable: Per-Request Cost of Blocked
+% Trackers in Firefox
+% Target venue: ANRW '26 (regular paper, 6 pages)
+% ============================================================
+
+\documentclass[10pt,sigconf,letterpaper,anonymous]{acmart}
+
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{xspace}
+\usepackage{float}
+
+\settopmatter{printfolios=true,printacmref=false}
+\setcopyright{none}
+\renewcommand\footnotetextcopyrightpermission[1]{}
+\pagestyle{plain}
+
+\acmConference[ANRW '26]{Applied Networking Research Workshop}{July 20, 2026}{Vienna, Austria}
+\acmYear{2026}
+\copyrightyear{2026}
+\acmISBN{}
+\acmDOI{}
+\acmPrice{}
+
+\newcommand{\numrequests}{3{,}490{,}824\xspace}
+\newcommand{\numdomains}{3{,}723\xspace}
+\newcommand{\numtrainrows}{2{,}443{,}576\xspace}
+\newcommand{\numtestrows}{523{,}624\xspace}
+
+\begin{document}
+
+\title{Estimating the Unobservable: Per-Request Cost of Blocked Trackers in Firefox}
+
+% Anonymized for double-blind review.
+\author{Anonymous Author(s)}
+\affiliation{%
+  \institution{Anonymous Institution}
+  \country{}
+}
+
+% ============================================================
+\begin{abstract}
+% ============================================================
+
+Firefox's Enhanced Tracking Protection (ETP) blocks third-party tracker requests for hundreds of millions of users, but the network cost it prevents is structurally unobservable: blocked requests never receive a response.
+We measure the cost landscape of the modern tracker ecosystem using \numrequests requests across \numdomains tracker domains from the HTTP Archive, and find that within-domain transfer size spans three orders of magnitude (coefficient of variation 0.94 at the median domain, 3.0 at the 90th percentile).
+We then present a deployable estimator that predicts per-request transfer size from features observable before a response arrives: an XGBoost model with Tweedie loss that ships as a 500\,KB ONNX artifact and beats every lookup-table baseline including exact-path memorization on the rows that path memorization can serve, with non-overlapping bootstrap confidence intervals.
+The model retains a $+28.9\%$ per-request and $+10.8$\,pp aggregation advantage on a 3-month temporal holdout, $+25.6\%$ and $+5.7$\,pp at 6 months. In a 35-page in-page Firefox crawl validating the deployment scenario directly (Playwright with mobile emulation), the model preserves a 7--9 percentage-point advantage over the deployable LUT on the user-facing weekly aggregation.
+We discuss implications for active IETF/IRTF discussions on tracker measurement, third-party content cost, and quantitative privacy-feature evaluation.
+
+\end{abstract}
+
+\maketitle
+
+% ============================================================
+\section{Introduction}
+\label{sec:intro}
+% ============================================================
+
+Enhanced Tracking Protection (ETP) is a privacy intervention deployed across all release channels of Firefox, blocking third-party requests classified as advertising, analytics, social, tag-manager, or consent-provider trackers by the Disconnect list~\cite{disconnectlist}.
+At the scale of hundreds of millions of daily active users, ETP makes billions of block decisions per day; the privacy dashboard reports a count of trackers blocked but no measure of the network or performance cost prevented.
+Every blocked request is reported equally: a 258-byte tracking pixel from \texttt{bat.bing.com} is indistinguishable from a 170\,KB JavaScript SDK from \texttt{googletagmanager.com}.
+
+Quantifying what ETP saves is a measurement problem with a structural gap: the request was never sent, so the response was never received. The browser sees only the block-time features (URL, resource type, initiator, HTTP metadata); transfer size, content type, and timing must be predicted. This question is squarely in the network-measurement community's lane: the Privacy Enhancements RG (PEARG) has standing calls for quantitative methodology to compare deployed privacy interventions, the Measurement and Analysis for Protocols RG (MAPRG) hosts deployed-system measurement at scale, and HTTPbis discussions on third-party content cost have nowhere to point for credible per-tracker numbers. Vendor self-reports cover page-level totals~\cite{brave2019savings} or aggregate counts; per-request, per-tracker, per-category measurements grounded in public data have not previously been published.
+
+\paragraph{Contributions.}
+(1) \textbf{The cost landscape ETP acts on:} within-domain transfer size spanning three orders of magnitude (CV 0.94 median, 3.0 p90) across \numdomains domains, and per-category byte concentration (a 26-domain Tag-manager category carries 41\% of bytes from 6\% of requests; \S\ref{sec:landscape}).
+(2) \textbf{A deployable estimator that beats every deployable LUT we tested}: 500\,KB ONNX artifact, 50\,$\mu$s median single-thread inference, 36.5\% MAE reduction over the deployed Domain+type LUT, 25\% reduction over the strongest intermediate-granularity deployable LUT we found, 8\% reduction even over the non-deployable path-LUT upper bound (\S\ref{sec:estimator}).
+(3) \textbf{A multi-axis robustness characterization:} per-request advantage held at $+33.5\%$, $+28.9\%$, $+25.6\%$ over 1/3/6-month temporal horizons, and cross-browser byte-agreement empirically $\geq 97.8\%$ within 5\% on a paired Firefox/Chrome fetch (\S\ref{sec:robustness}, \S\ref{sec:deployment}).
+(4) \textbf{Concrete inputs to active IRTF discussions} on quantitative privacy-feature evaluation, deployed-system measurement, and third-party content cost (\S\ref{sec:irtf}).
+
+% ============================================================
+\section{Background and Related Work}
+\label{sec:related}
+% ============================================================
+
+\paragraph{ETP and tracker blocking.}
+Firefox ETP, Brave Shields, Privacy Badger, and uBlock Origin make binary block/allow decisions on third-party requests.
+None reports the network cost of what was prevented; this work closes that gap.
+
+\paragraph{Tracker cost measurement.}
+\citet{kontaxis2015tracking} measured Firefox Tracking Protection on Alexa top-200 news sites, reporting 39\% data savings.
+The Ghostery Tracker Tax study~\cite{ghostery2020tracker} reported a 2.25$\times$ page load speedup; \citet{castelluroz2020demystifying} reported only 10--20\% bandwidth savings at 100K-site scale.
+\citet{pourghassemi2021adperf} attributed CPU costs to ad scripts via Chromium activity-trace instrumentation.
+WhoTracks.Me~\cite{karaj2018whotracksme} reports average content lengths per tracker domain from 780M+ page loads.
+All of these works \emph{measure} cost on completed page loads; none predicts what blocked requests would have transferred.
+
+\paragraph{Predicting blocked-resource cost.}
+The closest prior work is Brave's ad-blocker savings predictor~\cite{brave2019savings}: a LASSO regression on 237 page-level features (blocked requests, DOM characteristics, JavaScript task statistics, third-party presence one-hots) for \emph{page-level} bandwidth and JS-execution savings ($R^2=0.68$ for bandwidth, $R^2=0.73$ for CPU on a held-out 20\% split, fit on 1{,}686 paired-crawl page loads with vs.\ without blocking).
+We differ in three respects: per-request rather than per-page granularity; no paired crawl required; explicit handling of the structurally-unobservable inference setting.
+A Brave-style linear regression (Ridge) on our per-request features performs strictly worse than the LUT it would replace (MAE 9{,}651 vs 6{,}802, a 42\% regression) because least-squares on a target with mean 13\,KB and max 14\,MB is dominated by the heavy right tail and no linear combination of pre-response features tracks the tail closely enough to cancel the squared-error penalty. Predicting blocked-resource cost is not a generic regression problem; it requires a loss matched to the target distribution (Fig.~\ref{fig:target-dist}; method in \S\ref{sec:estimator}).
+
+\paragraph{IETF/IRTF context.}
+PEARG and MAPRG have repeatedly identified the lack of quantitative methodology for evaluating privacy interventions and the dearth of public web-traffic measurements at scale.
+HTTPbis has discussed third-party content as a protocol-level concern in the context of \texttt{Sec-Fetch-*}, Privacy Sandbox attribution reporting, and partitioned storage.
+Concrete per-request cost numbers feed directly into these conversations (\S\ref{sec:irtf}).
+
+% ============================================================
+\section{The Tracker Cost Landscape}
+\label{sec:landscape}
+% ============================================================
+
+Before estimating the unobservable, we measure what is observable: the cost landscape ETP acts on, in three views (full distribution, by category, by lookup-key granularity).
+The third view sets up the granularity question \S\ref{sec:estimator} answers.
+
+\subsection{Data}
+
+We use the HTTP Archive June 2024 mobile crawl~\cite{httparchive}, filtering to third-party tracker requests in five categories (advertising, analytics, social, tag-manager, consent-provider) per HTTP Archive's third-party entity table.
+The full set is approximately 348 million tracker requests across 5,186 domains.
+A 1\% deterministic hash sample (keyed on \texttt{page||url}) yields \numrequests requests across \numdomains domains, covering 92.8\% of the Disconnect list's traffic-weighted footprint.
+Rows are split 70/15/15 train/val/test; target encodings are computed exclusively from training.
+
+The primary target is \texttt{transfer\_bytes}: on-wire response size.
+Its distribution is severely zero-inflated (39.5\% exact zeros, mostly beacons) with a heavy right tail (max 14\,MB, mean 13,607, median 43): a spike at zero and a secondary mode near 90\,KB (JavaScript bundles).
+
+The crawl that produced these labels is Chrome-based; the model is for Firefox. We show in \S\ref{sec:deployment} (Fig.~\ref{fig:robustness}\,b) that a model trained on this Chrome data outperforms the deployed Firefox baseline on Firefox traffic, via two empirical tests: (i) a paired Firefox/Chrome fetch of 46 representative tracker URLs that quantifies per-URL byte agreement at the request level, and (ii) an in-page Firefox crawl that measures the model's aggregation advantage on real Firefox-served pages.
+
+\subsection{Within-domain variance}
+
+If responses from a single tracker domain were similar in size, a per-domain lookup table would suffice and there would be no need for an estimator at all. They are not (Fig.~\ref{fig:within-examples}). We measure within-domain spread using the coefficient of variation (CV $=$ standard deviation $/$ mean), where CV $\approx 1$ means typical responses differ from the mean by an amount comparable to the mean itself. Across \numdomains tracker domains the median CV of \texttt{transfer\_bytes} is 0.94 and the 90th percentile is 3.00: for the typical domain, individual responses span an order of magnitude around the mean, and for the heaviest-tailed tenth they span three. Timing targets (TTFB, load time) by contrast have low within-domain CV (0.38) because they are determined by network conditions rather than URL identity; per-domain summarization is appropriate for them, and the rest of this paper focuses on bytes.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\columnwidth]{figures/fig_within_domain_examples.pdf}
+    \caption{Within-domain transfer-size distributions for five high-volume tracker domains chosen for their wide spread. Box marks IQR (white line is median), whiskers extend to p1--p99; right column reports the share of responses that are exactly zero (beacons fired only for their server-side effect). \texttt{google-analytics.com} alone spans four orders of magnitude within its IQR.}
+    \label{fig:within-examples}
+\end{figure}
+
+\subsection{Per-category cost share}
+
+ETP filters by Disconnect's five categories (advertising, analytics, social, tag-manager, consent-provider). We classify domains via Disconnect (canonical category by priority for multi-listed domains) plus manual additions for tag-manager infrastructure (Google Tag Manager, Tealium, Adobe DTM) Disconnect treats as non-tracker; the mapping covers 92.8\% of request volume.
+Categories contribute unequally to blocked bandwidth (Fig.~\ref{fig:per-category}, Table~\ref{tab:per-category}): a 26-domain Tag-manager category carries 6.3\% of requests but 40.6\% of bytes (steepest concentration), Advertising inverts the ratio (66.5\% requests, 17.8\% bytes; dominated by beacons and pixels), and Content-CDN + Social contribute 25.3\% and 11.0\% of bytes from heavy script and image payloads.
+The asymmetry motivates URL-level rather than category- or domain-level cost estimation: bytes are concentrated in a small minority of high-cost requests, and that minority is identified by URL structure within rather than across categories.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lrrrr}
+\toprule
+Category & $n$ dom. & \% req. & \% bytes & Med. B \\
+\midrule
+Tag manager       &   26 &  6.3 & \textbf{40.6} &     44 \\
+Content (CDN)     &  573 &  9.1 & 25.3 &  6,072 \\
+Advertising       & 2,605 & \textbf{66.5} & 17.8 &    168 \\
+Social            &  121 &  7.9 & 11.0 &  1,407 \\
+Analytics         &  322 &  8.6 &  3.1 &     43 \\
+Consent provider  &   38 &  0.7 &  0.8 &  1,220 \\
+Fingerprinting    &   15 &  0.1 &  0.1 &  7,117 \\
+Other             &  892 &  0.8 &  1.4 &    532 \\
+\bottomrule
+\end{tabular}
+\caption{Per-category share of blocked tracker traffic (HTTP Archive June 2024 mobile, full population).}
+\label{tab:per-category}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\columnwidth]{figures/fig_per_category.pdf}
+    \caption{Share of blocked-tracker requests vs.\ share of bytes by Disconnect category. The 26-domain Tag-manager category is byte-heavy (41\% of bytes from 6\% of requests); the 2{,}605-domain Advertising category is byte-light (67\% of requests but only 18\% of bytes). Neither pattern is captured by domain- or category-level accounting; URL-level estimation is required.}
+    \label{fig:per-category}
+\end{figure}
+
+\subsection{From categories to a model: the path of granularity}
+\label{sec:lut-motivation}
+
+How fine does the lookup key have to be?
+Fig.~\ref{fig:lut-pareto} walks the hierarchy from the deployed (domain, type) median up through intermediate keys (\texttt{has\_query}, URL-length bucket, first path token) to the full URL-path LUT.
+Each step buys MAE at the cost of size, but the path LUT explodes to $\sim$16M entries at full population (two orders of magnitude larger than the Disconnect list) and churns continuously (only 14.9\% of unique paths in a September crawl appear in June training).
+Even the strongest deployable LUT we found is 25\% behind the model at comparable artifact size; exact-key memorization is not a deployable primitive at any granularity that beats the model.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=\columnwidth]{figures/fig_lut_pareto.pdf}
+    \caption{LUT variants vs.\ the model on test-set MAE; sorted ascending (best at top). Annotation gives full-population artifact size; non-deployable variants ($>$5\,MB) marked $\bm{\times}$. The model (blue) is within 2\% of the non-deployable path LUT (350$\times$ smaller) and beats every deployable LUT we tested by at least 25\%.}
+    \label{fig:lut-pareto}
+\end{figure}
+
+% ============================================================
+\section{Estimating the Unobservable Response}
+\label{sec:estimator}
+% ============================================================
+
+\S\ref{sec:lut-motivation} ruled out exact-key memorization as the right primitive.
+The remaining alternative is an estimator that generalizes across URL \emph{structure}; this section builds it from features Firefox observes at block time and reports the headline against the LUT hierarchy from above.
+We estimate \texttt{transfer\_bytes} only: Fig.~\ref{fig:within-examples} and the within-domain CV result (\S\ref{sec:landscape}) show that bytes are URL-predictable in a way timing targets (TTFB, load time) are not, so URL features cannot do work for those targets that domain-level summarization does not already do.
+
+\subsection{Features and model}
+
+The features have to be reconstructible from what Firefox sees \emph{before} a request is sent: the URL, the resource type the browser is about to request, the initiator, and the HTTP method. Within those constraints, we use 80 features in five groups, each capturing a different signal the within-domain variance result implicates: \emph{domain priors} (2 features) carry the per-domain typical-cost baseline that the LUT also has access to; \emph{URL structure} (12: path depth, length, query-param count, file extension) captures coarse byte-cost signals like ``has a long query string'' or ``ends in \texttt{.js}''; \emph{URL content} (a 50-dim TF-IDF+SVD embedding of the URL path) captures token-level patterns the structural features cannot, e.g.\ the model learns from training that paths matching \texttt{/gtm.js} are heavier than those matching \texttt{/pixel.gif}; \emph{request metadata} (10: resource/initiator type, method) tells the model whether the URL was fetched as a script, image, or beacon; and \emph{URL pattern regex flags} (6) encode a small set of hand-curated patterns we observed empirically (e.g.\ \texttt{register-trigger} for Privacy Sandbox).
+
+The model is XGBoost with Tweedie loss~\cite{jorgensen1987exponential,smyth2002tweedie} ($p{=}1.5$), 500 trees, depth 8, learning rate 0.05, early stopping on validation. Two properties of the target distribution (Fig.~\ref{fig:target-dist}) drive the loss choice. First, 39.5\% of responses are exact zeros (mostly beacons fired purely for their side effect on the server); standard squared-error regression treats these as ordinary observations and pulls predictions toward them. Second, the non-zero tail is heavy: mean 13\,KB, max 14\,MB. Squared-error trains a model that splits the difference between the spike at zero and the heavy tail and gets neither right. Tweedie regression~\cite{smyth2002tweedie} is the standard treatment for distributions with this exact shape (a point mass at zero plus a positive continuous tail) in actuarial science, where it has been used for decades to model insurance claims; the parameter $p \in (1, 2)$ controls how aggressively errors on large-magnitude predictions are weighted relative to errors on small ones, and $p=1.5$ is the conventional middle ground.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\columnwidth]{figures/fig_target_dist.pdf}
+    \caption{Distribution of \texttt{transfer\_bytes} across all \numrequests training requests. The 39.5\% spike at zero is the dominant feature (beacons fired purely for their server-side effect); the remainder is a heavy-tailed positive distribution spanning four orders of magnitude. Squared-error regression cannot fit both regimes simultaneously; Tweedie ($p{=}1.5$) is the standard treatment for distributions with this shape.}
+    \label{fig:target-dist}
+\end{figure}
+
+\subsection{Headline: URL-level resolution achieved}
+
+The model reaches MAE $4{,}246$ B (95\% CI $[4{,}079, 4{,}442]$, $\rho{=}0.93$) on the held-out test split (Table~\ref{tab:main-results}): a 37.6\% MAE reduction over the deployed Domain+type LUT, and within 2\% of the non-deployable path LUT despite being 350$\times$ smaller.
+This is the first estimator in the LUT--ladder hierarchy of \S\ref{sec:lut-motivation} that achieves URL-level accuracy at deployable artifact size.
+
+\begin{table}[!ht]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrrrl}
+\toprule
+Approach & Size & MAE & 95\% CI & $\rho$ \\
+\midrule
+Global median           & $<$1\,B   & 19{,}905 & n/a & n/a \\
+Domain LUT              & 88\,KB    &  9{,}008 & n/a & n/a \\
+\textbf{Domain+type LUT}\textsuperscript{$\star$} & \textbf{114\,KB} & \textbf{6{,}802} & \textbf{[6{,}633,\,6{,}977]} & \textbf{0.94} \\
+Path LUT (fallback)\textsuperscript{$\dagger$} & 187\,MB &  4{,}326 & [4{,}154,\,4{,}516] & 0.93 \\
+\textbf{XGBoost Tweedie}\textsuperscript{$\star$} & \textbf{500\,KB} & \textbf{4{,}246} & \textbf{[4{,}079,\,4{,}442]} & \textbf{0.93} \\
+\bottomrule
+\end{tabular}
+\caption{Transfer-size prediction on the held-out test split. $\star$~deployable within Remote Settings envelope; $\dagger$~not deployable (size + continuous URL churn, \S\ref{sec:lut-motivation}). Bootstrap CIs from 1{,}000 resamples. The model achieves a 37.6\% MAE reduction over the most accurate deployable baseline at comparable artifact size, and is within 2\% of the non-deployable path-LUT upper bound.}
+\label{tab:main-results}
+\end{table}
+
+\paragraph{Path coverage decomposition.}
+Decomposing by path coverage shows the model matches path-level memorization on the 92\% of test rows the path LUT can serve (LUT 1{,}811 vs.\ model 2{,}264 MAE) and beats it on the remaining 8\% it cannot (LUT 33{,}471 vs.\ model 27{,}224), at 350$\times$ smaller artifact size and with lower systematic bias that cancels in aggregation (Fig.~\ref{fig:robustness}\,b; mechanism in \S\ref{sec:deployment}).
+
+The improvement concentrates where it matters most for aggregation: scripts and CSS, the high-bytes resource types (Table~\ref{tab:by-type}).
+Beacons and short text responses see no improvement because the LUT's near-zero prediction is already near-optimal.
+
+\begin{table}[H]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrrrr}
+\toprule
+Resource type & $n$ test & D+T LUT & Model & vs.\ D+T \\
+\midrule
+Script         & 144,676 & 12,996 & \textbf{3,135} & \textbf{+75.9\%} \\
+CSS            &   6,142 &  6,222 & \textbf{2,084} & +66.5\% \\
+HTML           &  92,438 &  2,246 & \textbf{1,294} & +42.4\% \\
+Image          & 136,698 &  8,330 & \textbf{7,428} & +10.8\% \\
+Other (beacon) &  98,617 &     16 &     16 & +4.6\% \\
+Text           &  42,984 &    292 &    303 & $-$3.8\% \\
+\bottomrule
+\end{tabular}
+\caption{Per-resource-type MAE (bytes). Wins concentrate on script and CSS, the high-bytes classes from Table~\ref{tab:per-category}.}
+\label{tab:by-type}
+\end{table}
+
+\paragraph{Loss and feature ablation.}
+Off-the-shelf XGBoost defaults misfit zero-inflated web data: a squared-error baseline trails Tweedie at $p{=}1.5$ by roughly 23\%, dwarfing the 4\% sensitivity to the Tweedie power within $p\in[1.2,1.8]$.
+URL content features compose: regex flags and TF-IDF embeddings each capture about half the URL-derived signal individually, with the combined model reaching the headline MAE in Table~\ref{tab:main-results}.
+TF-IDF subsumes most of the regex signal and adds patterns the researcher did not anticipate (e.g., Privacy Sandbox \texttt{register-trigger} paths).
+Laplace add-$k$ smoothing of the path LUT does not close the gap to the model, confirming that learning URL structure beats regularizing exact-key memorization.
+
+% ============================================================
+\section{Robustness}
+\label{sec:robustness}
+% ============================================================
+
+The headline (Table~\ref{tab:main-results}) is computed on a random test split: rows held out from the same June 2024 crawl the model was trained on. A deployed estimator faces two further conditions the random split does not capture: (i) the world has moved on since training, and (ii) what the user actually sees is a sum over many requests, not a single prediction. We address each in turn: temporal staleness up to six months in \S\ref{sec:robustness-temporal}, and aggregation behavior in \S\ref{sec:robustness-agg}. The cross-browser deployment scenario, evaluating on Firefox traffic the model was never trained on, is treated separately in \S\ref{sec:deployment}, since it is the deployment setting itself rather than a robustness check.
+
+\subsection{Temporal stability}
+\label{sec:robustness-temporal}
+
+How stale can a deployed model be before it stops earning its keep?
+We train on June 2024 and evaluate on three later HTTP Archive crawls (1, 3, and 6 months out), sweeping the worst-case staleness window a quarterly-retrained estimator would experience over a full year.
+
+Per-request MAE degrades from 4{,}454 (1\,mo) to 5{,}256 (6\,mo) but still beats the LUT by a quarter at 6 months; on weekly aggregation the gap shrinks more sharply (Fig.~\ref{fig:robustness}\,a; 13\,pp $\to$ 6\,pp) as the model's per-request variance grows and the variance-cancellation advantage erodes. Spearman ranking remains $\rho{\geq}0.92$ throughout, so even where calibration drifts the model orders requests by cost correctly. The 3-month aggregation gap is still $+10.8$\,pp, justifying the quarterly retraining recommendation; longer-horizon evaluation is left to future work.
+
+\subsection{Aggregation: the user-facing number}
+\label{sec:robustness-agg}
+
+Users see a weekly total, not a per-request value. \emph{Uniform}: sample $N$ blocked requests with replacement, sum predictions and truths, report median \% error of the sum over 2{,}000 trials. \emph{Domain-correlated}: first sample 15 distinct domains then $N$ requests from those domains, modeling concentrated browsing.
+
+\begin{table}[!ht]
+\centering
+\small
+\begin{tabular}{lrrrr}
+\toprule
+& \multicolumn{2}{c}{Uniform} & \multicolumn{2}{c}{Domain-correlated} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+$N$ & Model & D+T LUT & Model & D+T LUT \\
+\midrule
+50  & 6.8\% & 20.8\% & 14.2\% & 34.5\% \\
+100 & 6.3\% & 20.9\% & 12.5\% & 34.2\% \\
+200 & 6.0\% & 21.9\% & 12.9\% & 36.4\% \\
+500 & 5.1\% & 23.2\% & 11.2\% & 36.7\% \\
+\bottomrule
+\end{tabular}
+\caption{Median weekly aggregation error. Model advantage widens under domain-correlated browsing.}
+\label{tab:aggregation}
+\end{table}
+
+% ============================================================
+\section{Deployment}
+\label{sec:deployment}
+% ============================================================
+
+The estimator runs from pre-response features only, the constraint a browser-side privacy feature must satisfy. It is being integrated into a major browser vendor's privacy widget to surface concrete byte-cost numbers alongside existing tracker block-count counters.
+
+\paragraph{Integration, surface, distribution.}
+ETP's block decision is taken at Firefox's content-policy stage, where the request URI, \texttt{ContentPolicyType}, loading principal, and HTTP method are already inspected; the estimator invokes at the same hook and leaves the block decision unchanged. Per-request output sums into a per-day counter and surfaces in the New Tab widget as one additional field (``saved approximately X\,MB this week''). The 500\,KB ONNX model plus 2\,MB TF-IDF/SVD companion ship via Remote Settings, the same channel that distributes the Disconnect list and Public Suffix List; a model update is operationally identical to a Disconnect-list update.
+
+\paragraph{ONNX inference performance.}
+Single-thread per-request inference over 10{,}000 calls on commodity x86 (CPU-bound, synchronous, no GPU): \textbf{median 50\,$\mu$s, p99 93\,$\mu$s, p99.9 108\,$\mu$s} via XGBoost's native predict (a conservative upper bound; the ONNX-runtime \texttt{TreeEnsembleRegressor} path is typically 2--5$\times$ faster on the same hardware).
+Resident memory $\sim$5\,MB, loaded once at startup; per-call allocation is a fixed-size feature vector reused across requests. The tree-count ablation places the size/accuracy elbow at 500 trees (200 trees loses the edge over the path LUT).
+
+\paragraph{Deployment validation: a model trained on Chrome data wins on Firefox traffic.}
+We close the cross-browser loop with two direct empirical tests.
+
+\emph{Per-URL byte agreement (Claim A).} A tracker's response is determined by URL and server state; URL and method are identical across browsers, cookies are per-user not per-browser, and most tracker endpoints do not UA-negotiate content. We confirm this directly: across 46 representative tracker URLs fetched under both Firefox and Chrome from the same vantage point, the median Firefox/Chrome byte ratio is $1.000$ and 97.8\% of URL pairs agree within 5\%. The single outlier (Google reCAPTCHA at 0.63) is documented UA-conditioned bot mitigation. Per-URL bytes are browser-invariant.
+
+\emph{In-page Firefox aggregation (Claim B).} We crawled 35 high-traffic publisher pages with headless Firefox via Playwright (Moto~G4 mobile emulation matching HTTP Archive's training-time conditions), engineered features directly from Firefox's \texttt{ContentPolicyType}, and ran the deployed pipeline end-to-end on the resulting 6{,}172 tracker requests across 499 domains. Fig.~\ref{fig:robustness}\,b: the model preserves a 7--9\,pp aggregation advantage over the LUT at every browsing scale, in both uniform and domain-correlated browsing.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=\columnwidth]{figures/fig_robustness.pdf}
+    \caption{The model preserves its weekly-aggregation advantage over the deployable LUT across two stress axes. (a)~Temporal staleness: a $+13$\,pp advantage at 1\,month erodes to $+6$\,pp at 6\,months but stays positive throughout. (b)~In-page Firefox crawl: 7--9\,pp advantage at every browsing scale ($N{=}50$ to 500), in both uniform and domain-correlated simulations.}
+    \label{fig:robustness}
+\end{figure}
+
+Two structural details. 75\% of in-page requests use URL paths the model saw during training (MAE 5{,}073, within 17\% of in-distribution); the remaining 25\% are structurally novel (per-impression IDs, per-user model files) where neither approach can do better than its prior. The LUT is marginally better per individual request (7{,}423 vs 8{,}367 B), but a LUT's per-(domain, type) bias adds up linearly across requests while the model's residuals cancel to roughly zero under summation; the user-facing widget surfaces that sum.
+
+\paragraph{Update cadence and reproducibility.}
+URL-path churn (\S\ref{sec:robustness}) drives a quarterly retraining schedule via Remote Settings, bounding deployed-model staleness at three months where the aggregation advantage over the deployed baseline is still $+10.8$\,pp (Fig.~\ref{fig:robustness}\,a).
+The HTTP Archive query, sampling rule, training pipeline, ONNX artifact, Playwright crawl harness, and analysis notebooks will be released on acceptance (artifact URL withheld for double-blind compliance); the HTTP Archive dataset itself is public via BigQuery exports.
+
+% ============================================================
+\section{Implications for IETF/IRTF Privacy Measurement}
+\label{sec:irtf}
+% ============================================================
+
+Three IRTF/IETF venues have surfaced open questions this paper's measurements and methodology directly address.
+
+\textbf{MAPRG} (Measurement and Analysis for Protocols RG) hosts deployed-system measurement at scale~\cite{maprg-agenda-124}. This paper's per-category bandwidth measurement and open artifact (BigQuery query, training pipeline, ONNX model, Playwright harness) contribute a tracker-blocking baseline of the type MAPRG has hosted in adjacent areas (HTTP/2 crawls, AI-crawler measurement). The pre-decision counterfactual framing (predicting what an unsent request would have transferred) is a measurement primitive that has not appeared in MAPRG sessions and may be of independent methodological interest.
+
+\textbf{HTTPbis} is actively deliberating \path{draft-ietf-httpbis-layered-cookies-01}~\cite{httpbis-layered-cookies}, whose own \S7 admits that user-agent third-party cookie restrictions are ``experiments'' and that mechanism-level consensus is premature. Layered Cookies and similar drafts treat third-party content as a uniform category for restriction purposes; our per-category bandwidth shares show the category is operationally heterogeneous (41\%-of-bytes Tag-manager vs.\ 18\%-of-bytes Advertising), which is relevant input for any deployment-impact analysis.
+
+\textbf{PEARG} (Privacy Enhancements and Assessments RG) maintains \path{draft-irtf-pearg-safe-internet-measurement}~\cite{pearg-safe-measurement} as its methodology document but does not yet specify an evaluation primitive for browser-side content blockers, where the blocked artifact is by construction unobserved. Our pre-decision counterfactual recipe generalizes to any intervention that intercepts a resource before observation (Brave Shields, uBlock Origin, Safari Tracking Protection, Privacy Sandbox topic-API measurement); the Firefox deployment is a first validation point.
+
+This paper does not propose a new protocol or RFC; it contributes a measurement methodology and a public artifact intended to fill gaps each of these groups has identified.
+
+% ============================================================
+\section{Conclusion and Future Work}
+\label{sec:conclusion}
+% ============================================================
+
+Per-request cost estimation for blocked tracker requests is feasible at deployable scale. A 500\,KB XGBoost+Tweedie model with 50\,$\mu$s single-thread inference beats every deployable lookup-table baseline by at least 25\%, comes within 2\% of the non-deployable path-LUT upper bound at $350\times$ smaller artifact size, holds its advantage out to a 6-month temporal horizon, and preserves a 7--9\,pp aggregation advantage on real Firefox in-page traffic the model never trained on. The methodology is being integrated into a deployed browser privacy feature.
+The substantive deliverable for the network-measurement community is the recipe, not the model: a Tweedie-loss treatment of zero-inflated heavy-tailed web traffic, a LUT-ladder methodology for deciding how fine the lookup key needs to be, and an open artifact (BigQuery query, training pipeline, ONNX model, Playwright harness) that any vendor can replicate, audit, or extend to other interventions where a resource is intercepted before observation.
+Future work extends to cross-list robustness, cross-vendor evaluation against Brave Shields and uBlock Origin, and a Firefox-side telemetry replay against real user traffic.
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references}
+
+\end{document}

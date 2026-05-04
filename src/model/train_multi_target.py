@@ -84,7 +84,7 @@ def engineer_features(df, train_df, url_embeddings=None):
     features['has_query_params'] = df['has_query_params'].astype(int)
 
     # Resource type one-hot
-    for rt in ['script', 'image', 'other', 'html', 'text', 'css']:
+    for rt in ['script', 'image', 'other', 'html', 'text', 'json', 'css', 'font', 'video', 'xml', 'audio']:
         features[f'rt_{rt}'] = (df['resource_type'] == rt).astype(int)
 
     # File extension one-hot
@@ -310,7 +310,7 @@ def train_target(target_col, target_config, train_df, val_df, test_df,
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', type=str,
-                        default=str(ROOT / 'data' / 'raw' / 'per_request_1pct.csv'))
+                        default=str(ROOT / 'data' / 'raw' / '05_per_request_full' / 'per_request_full.csv'))
     parser.add_argument('--targets', type=str, nargs='+',
                         default=list(TARGETS.keys()),
                         help='Targets to train (default: all)')
@@ -369,6 +369,13 @@ def main():
     X_val = engineer_features(val_df, train_df, url_embed_val)
     X_test = engineer_features(test_df, train_df, url_embed_test)
     print(f"Feature matrix: {X_train.shape[1]} features")
+
+    # Persist inference-time pipeline artifacts (domain encodings, feature
+    # column order). The URLEmbedder was already saved above. Together these
+    # let `inference_pipeline.InferencePipeline` predict on novel URLs without
+    # re-loading the training CSV.
+    from inference_pipeline import save_inference_artifacts
+    save_inference_artifacts(train_df, X_train.columns, target_col="transfer_bytes")
 
     # Train each target
     all_results = {}

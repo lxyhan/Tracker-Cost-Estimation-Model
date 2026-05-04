@@ -4,9 +4,9 @@
 -- Train on all third-party domains (broader patterns)
 -- Test on Disconnect domains only (Firefox's actual inference scenario)
 --
--- Sampling: 1% of requests via hash to keep result size manageable
--- Expected: ~3-4M requests * 1% = 30-40K rows per domain group
--- Total expected: ~500K-1M rows
+-- Sampling: 1% of requests via hash (MOD 100 = 0)
+-- Expected: ~349M total tracker requests * 1% = ~3.5M rows
+-- Output goes to data/raw/per_request_full.csv
 
 SELECT
   NET.HOST(req.url) AS tracker_domain,
@@ -53,5 +53,5 @@ WHERE req.date = '2024-06-01'
     WHERE date = '2024-06-01'
       AND category IN ('ad', 'analytics', 'social', 'tag-manager', 'consent-provider')
   )
-  -- 0.1% sample (~350K rows, exportable as CSV)
-  AND MOD(ABS(FARM_FINGERPRINT(CONCAT(req.page, req.url))), 1000) = 0
+  -- 1% sample (~3.5M rows; ~half-GB CSV)
+  AND MOD(ABS(FARM_FINGERPRINT(CONCAT(req.page, req.url))), 100) = 0
