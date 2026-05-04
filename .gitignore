@@ -45,7 +45,8 @@ anrw-submission/*.blg
 anrw-submission/*.log
 anrw-submission/*.out
 
-# Model binaries
+# Model binaries (top-level intermediates only; canonical models live in
+# labeled subdirs like apr2026/ and jun2024/ which ARE tracked)
 models/per_request/*.json
 models/per_request/*.joblib
 models/per_request/*.npy

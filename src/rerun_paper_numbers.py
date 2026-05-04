@@ -27,7 +27,7 @@ from scipy.stats import spearmanr
 from sklearn.metrics import mean_absolute_error
 
 ROOT = Path(__file__).resolve().parents[1]
-MODELS = ROOT / "models" / "per_request"
+MODELS = ROOT / "models" / "per_request" / "apr2026"
 DATA = ROOT / "data" / "raw" / "17_recent_apr2026" / "per_request_apr2026.csv"
 OUT = MODELS / "rerun_paper_numbers.json"
 

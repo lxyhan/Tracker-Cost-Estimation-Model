@@ -1,0 +1,56 @@
+[
+  {
+    "label": "Domain only",
+    "key": "tracker_domain",
+    "mae": 9007.857854779348,
+    "n_entries_sample": 6285,
+    "n_entries_full_pop": 7542,
+    "size_KB_full_pop": 88,
+    "deployable": true
+  },
+  {
+    "label": "Domain + type (deployed baseline)",
+    "key": "tracker_domain+resource_type",
+    "mae": 6801.989130543937,
+    "n_entries_sample": 8110,
+    "n_entries_full_pop": 9732,
+    "size_KB_full_pop": 114,
+    "deployable": true
+  },
+  {
+    "label": "Domain + type + has_query_params",
+    "key": "tracker_domain+resource_type+has_query_params",
+    "mae": 6225.4560991469125,
+    "n_entries_sample": 8708,
+    "n_entries_full_pop": 10449,
+    "size_KB_full_pop": 122,
+    "deployable": true
+  },
+  {
+    "label": "Domain + type + URL-length bucket (5)",
+    "key": "tracker_domain+resource_type+url_length_bucket",
+    "mae": 5862.078520177346,
+    "n_entries_sample": 10730,
+    "n_entries_full_pop": 16095,
+    "size_KB_full_pop": 188,
+    "deployable": true
+  },
+  {
+    "label": "Domain + type + first path token",
+    "key": "tracker_domain+resource_type+first_path_token",
+    "mae": 5749.4990736045065,
+    "n_entries_sample": 15471,
+    "n_entries_full_pop": 46413,
+    "size_KB_full_pop": 543,
+    "deployable": true
+  },
+  {
+    "label": "Domain + URL path (non-deployable)",
+    "key": "tracker_domain+url_path",
+    "mae": 4687.997514548677,
+    "n_entries_sample": 160153,
+    "n_entries_full_pop": 16015300,
+    "size_KB_full_pop": 187679,
+    "deployable": false
+  }
+]

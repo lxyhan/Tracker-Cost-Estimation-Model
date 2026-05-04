@@ -21,7 +21,7 @@ import pandas as pd
 import xgboost as xgb
 
 ROOT = Path(__file__).resolve().parents[2]
-MODELS = ROOT / "models" / "per_request"
+MODELS = ROOT / "models" / "per_request" / "apr2026"
 
 EMBEDDER_PATH = MODELS / "url_embedder.joblib"
 ENCODINGS_PATH = MODELS / "domain_encodings.json"

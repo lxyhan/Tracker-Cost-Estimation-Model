@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-INPUT = ROOT / "models" / "per_request" / "lut_variants.json"
+INPUT = ROOT / "models" / "per_request" / "apr2026" / "lut_variants.json"
 OUT = ROOT / "anrw-submission" / "figures" / "fig_lut_pareto.pdf"
 
 # Consistent palette across all paper figures
