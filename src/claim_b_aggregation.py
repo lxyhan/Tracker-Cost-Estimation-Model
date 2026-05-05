@@ -22,7 +22,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 VAL_CSV = ROOT / "data" / "raw" / "claim_b_in_page_validation.csv"
-ENC_PATH = ROOT / "models" / "per_request" / "domain_encodings.json"
+ENC_PATH = ROOT / "models" / "per_request" / "apr2026" / "domain_encodings.json"
 
 
 def add_lut_predictions(df: pd.DataFrame) -> pd.DataFrame:
