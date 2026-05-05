@@ -103,7 +103,7 @@ The third view sets up the granularity question \S\ref{sec:estimator} answers.
 
 \subsection{Data}
 
-We use the HTTP Archive June 2024 mobile crawl~\cite{httparchive}, filtering to third-party tracker requests in five categories (advertising, analytics, social, tag-manager, consent-provider) per HTTP Archive's third-party entity table.
+We use the HTTP Archive April 2026 mobile crawl~\cite{httparchive}, filtering to third-party tracker requests in five categories (advertising, analytics, social, tag-manager, consent-provider) per HTTP Archive's third-party entity table.
 The full set is approximately 348 million tracker requests across 5,186 domains.
 A 1\% deterministic hash sample (keyed on \texttt{page||url}) yields \numrequests requests across \numdomains domains, covering 92.8\% of the Disconnect list's traffic-weighted footprint.
 Rows are split 70/15/15 train/val/test; target encodings are computed exclusively from training.
@@ -147,7 +147,7 @@ Fingerprinting    &   15 &  0.1 &  0.1 &  7,117 \\
 Other             &  892 &  0.8 &  1.4 &    532 \\
 \bottomrule
 \end{tabular}
-\caption{Per-category share of blocked tracker traffic (HTTP Archive June 2024 mobile, full population).}
+\caption{Per-category share of blocked tracker traffic (HTTP Archive April 2026 mobile, full population).}
 \label{tab:per-category}
 \end{table}
 
@@ -256,13 +256,13 @@ Laplace add-$k$ smoothing of the path LUT does not close the gap to the model, c
 \label{sec:robustness}
 % ============================================================
 
-The headline (Table~\ref{tab:main-results}) is computed on a random test split: rows held out from the same June 2024 crawl the model was trained on. A deployed estimator faces two further conditions the random split does not capture: (i) the world has moved on since training, and (ii) what the user actually sees is a sum over many requests, not a single prediction. We address each in turn: temporal staleness up to six months in \S\ref{sec:robustness-temporal}, and aggregation behavior in \S\ref{sec:robustness-agg}. The cross-browser deployment scenario, evaluating on Firefox traffic the model was never trained on, is treated separately in \S\ref{sec:deployment}, since it is the deployment setting itself rather than a robustness check.
+The headline (Table~\ref{tab:main-results}) is computed on a random test split: rows held out from the same April 2026 crawl the model was trained on. A deployed estimator faces two further conditions the random split does not capture: (i) the world has moved on since training, and (ii) what the user actually sees is a sum over many requests, not a single prediction. We address each in turn: temporal staleness up to six months in \S\ref{sec:robustness-temporal}, and aggregation behavior in \S\ref{sec:robustness-agg}. The cross-browser deployment scenario, evaluating on Firefox traffic the model was never trained on, is treated separately in \S\ref{sec:deployment}, since it is the deployment setting itself rather than a robustness check.
 
 \subsection{Temporal stability}
 \label{sec:robustness-temporal}
 
 How stale can a deployed model be before it stops earning its keep?
-We train on June 2024 and evaluate on three later HTTP Archive crawls (1, 3, and 6 months out), sweeping the worst-case staleness window a quarterly-retrained estimator would experience over a full year.
+To probe staleness we train an auxiliary model on the June 2024 crawl and evaluate on three later HTTP Archive crawls (1, 3, and 6 months out), sweeping the worst-case staleness window a quarterly-retrained estimator would experience over a full year.
 
 Per-request MAE degrades from 4{,}454 (1\,mo) to 5{,}256 (6\,mo) but still beats the LUT by a quarter at 6 months; on weekly aggregation the gap shrinks more sharply (Fig.~\ref{fig:robustness}\,a; 13\,pp $\to$ 6\,pp) as the model's per-request variance grows and the variance-cancellation advantage erodes. Spearman ranking remains $\rho{\geq}0.92$ throughout, so even where calibration drifts the model orders requests by cost correctly. The 3-month aggregation gap is still $+10.8$\,pp, justifying the quarterly retraining recommendation.
 
