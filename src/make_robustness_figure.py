@@ -24,16 +24,15 @@ COLOR_FILL  = "#1f6feb"
 
 # --- Panel A: temporal aggregation error ---
 horizons_x = [0, 1, 3, 6]
-horizons_label = ["In-dist.", "1\mo", "3\mo", "6\mo"]
+horizons_label = ["In-dist.", "1 mo", "3 mo", "6 mo"]
 model_agg = [6.0, 8.0, 10.7, 13.9]
 lut_agg   = [21.9, 21.3, 21.5, 19.6]
 
 # --- Panel B: Claim B aggregation (Tranco 500-page in-page Firefox) ---
 # Numbers from src/claim_b_aggregation.py output on
 # data/raw/claim_b_500page_apr2026.csv (apr2026 model + apr2026 LUT).
+# Realistic browsing pattern: domain-correlated, the deployment scenario.
 N = [50, 100, 200, 500]
-model_uniform    = [43.3, 44.5, 46.1, 46.7]
-lut_uniform      = [36.8, 37.6, 39.4, 40.1]
 model_correlated = [59.4, 58.4, 57.9, 57.6]
 lut_correlated   = [72.5, 71.6, 71.1, 69.2]
 
@@ -62,20 +61,25 @@ ax1.annotate(f"{lut_agg[3] - model_agg[3]:.1f} pp", xy=(6, (lut_agg[3]+model_agg
 
 # === Panel B ===
 x = np.arange(len(N))
-ax2.plot(x, lut_uniform,      "o-",  color=COLOR_LUT,   linewidth=2, markersize=7,
-         label="D+T LUT (uniform)")
-ax2.plot(x, model_uniform,    "o-",  color=COLOR_MODEL, linewidth=2, markersize=7,
-         label="Model (uniform)")
-ax2.plot(x, lut_correlated,   "o--", color=COLOR_LUT,   linewidth=2, markersize=7,
-         label="D+T LUT (correlated)")
-ax2.plot(x, model_correlated, "o--", color=COLOR_MODEL, linewidth=2, markersize=7,
-         label="Model (correlated)")
+ax2.plot(x, lut_correlated,   "o-", color=COLOR_LUT,   linewidth=2, markersize=7,
+         label="D+T LUT")
+ax2.plot(x, model_correlated, "o-", color=COLOR_MODEL, linewidth=2, markersize=7,
+         label="Model")
+ax2.fill_between(x, model_correlated, lut_correlated, color=COLOR_FILL, alpha=0.10)
 
 ax2.set_xticks(x)
 ax2.set_xticklabels([f"N={n}" for n in N])
 ax2.set_xlabel("Browsing scale (tracker reqs / week)")
 ax2.set_title("(b) In-page Firefox deployment", fontsize=10, pad=8)
 ax2.set_ylim(0, 80)
+
+# Annotate the persistent gap (matches panel A style)
+ax2.annotate(f"{lut_correlated[0] - model_correlated[0]:.1f} pp",
+             xy=(0, (lut_correlated[0] + model_correlated[0]) / 2),
+             xytext=(0.25, 60), fontsize=8, color=COLOR_MODEL)
+ax2.annotate(f"{lut_correlated[-1] - model_correlated[-1]:.1f} pp",
+             xy=(len(N)-1, (lut_correlated[-1] + model_correlated[-1]) / 2),
+             xytext=(len(N)-1.7, 60), fontsize=8, color=COLOR_MODEL)
 
 # Clean both axes
 for ax in (ax1, ax2):
@@ -90,14 +94,12 @@ for ax in (ax1, ax2):
 # Single shared legend below both panels
 from matplotlib.lines import Line2D
 shared_legend = [
-    Line2D([0], [0], marker="o", linestyle="-",  color=COLOR_MODEL, label="Model (uniform / temporal)"),
-    Line2D([0], [0], marker="o", linestyle="-",  color=COLOR_LUT,   label="D+T LUT (uniform / temporal)"),
-    Line2D([0], [0], marker="o", linestyle="--", color=COLOR_MODEL, label="Model (correlated)"),
-    Line2D([0], [0], marker="o", linestyle="--", color=COLOR_LUT,   label="D+T LUT (correlated)"),
+    Line2D([0], [0], marker="o", linestyle="-", color=COLOR_MODEL, label="Model"),
+    Line2D([0], [0], marker="o", linestyle="-", color=COLOR_LUT,   label="D+T LUT"),
 ]
-fig.legend(handles=shared_legend, loc="lower center", ncol=4, fontsize=8,
-           frameon=False, bbox_to_anchor=(0.5, -0.02), columnspacing=1.2,
-           handletextpad=0.4, handlelength=2.0)
+fig.legend(handles=shared_legend, loc="lower center", ncol=2, fontsize=9,
+           frameon=False, bbox_to_anchor=(0.5, -0.02), columnspacing=2.0,
+           handletextpad=0.5, handlelength=2.0)
 
 plt.tight_layout()
 plt.subplots_adjust(bottom=0.22)
