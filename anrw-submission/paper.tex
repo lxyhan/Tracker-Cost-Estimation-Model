@@ -93,11 +93,6 @@ The closest prior work is Brave's ad-blocker savings predictor~\cite{brave2019sa
 We differ in three respects: per-request rather than per-page granularity; no paired crawl required; explicit handling of the structurally-unobservable inference setting.
 A Brave-style linear regression (Ridge) on our per-request features performs strictly worse than the LUT it would replace (MAE 9{,}651 vs 6{,}802, a 42\% regression) because least-squares on a target with mean 13\,KB and max 14\,MB is dominated by the heavy right tail and no linear combination of pre-response features tracks the tail closely enough to cancel the squared-error penalty. Predicting blocked-resource cost is not a generic regression problem; it requires a loss matched to the target distribution (Fig.~\ref{fig:target-dist}; method in \S\ref{sec:estimator}).
 
-\paragraph{IETF/IRTF context.}
-PEARG and MAPRG have repeatedly identified the lack of quantitative methodology for evaluating privacy interventions and the dearth of public web-traffic measurements at scale.
-HTTPbis has discussed third-party content as a protocol-level concern in the context of \texttt{Sec-Fetch-*}, Privacy Sandbox attribution reporting, and partitioned storage.
-Concrete per-request cost numbers feed directly into these conversations (\S\ref{sec:irtf}).
-
 % ============================================================
 \section{The Tracker Cost Landscape}
 \label{sec:landscape}
@@ -269,7 +264,7 @@ The headline (Table~\ref{tab:main-results}) is computed on a random test split: 
 How stale can a deployed model be before it stops earning its keep?
 We train on June 2024 and evaluate on three later HTTP Archive crawls (1, 3, and 6 months out), sweeping the worst-case staleness window a quarterly-retrained estimator would experience over a full year.
 
-Per-request MAE degrades from 4{,}454 (1\,mo) to 5{,}256 (6\,mo) but still beats the LUT by a quarter at 6 months; on weekly aggregation the gap shrinks more sharply (Fig.~\ref{fig:robustness}\,a; 13\,pp $\to$ 6\,pp) as the model's per-request variance grows and the variance-cancellation advantage erodes. Spearman ranking remains $\rho{\geq}0.92$ throughout, so even where calibration drifts the model orders requests by cost correctly. The 3-month aggregation gap is still $+10.8$\,pp, justifying the quarterly retraining recommendation; longer-horizon evaluation is left to future work.
+Per-request MAE degrades from 4{,}454 (1\,mo) to 5{,}256 (6\,mo) but still beats the LUT by a quarter at 6 months; on weekly aggregation the gap shrinks more sharply (Fig.~\ref{fig:robustness}\,a; 13\,pp $\to$ 6\,pp) as the model's per-request variance grows and the variance-cancellation advantage erodes. Spearman ranking remains $\rho{\geq}0.92$ throughout, so even where calibration drifts the model orders requests by cost correctly. The 3-month aggregation gap is still $+10.8$\,pp, justifying the quarterly retraining recommendation.
 
 \subsection{Aggregation: the user-facing number}
 \label{sec:robustness-agg}
